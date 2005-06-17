@@ -680,12 +680,64 @@ empty array when fail.
 
 =item login(USER, PASSWORD)
 
-Use the given informations to log into a FTP server.
+Use the given informations to log into the FTP server.
 
-=item list ([DIRECTORY])
+=item list([DIRECTORY])
 
-This method returns a list of files. If DIRECTORY is omitted, this method will
-return the list of the current directory. 
+This method returns a list of files in this format:
+
+total 5
+drwxrwx--- 1 owner group          512 May 31 11:16 .
+drwxrwx--- 1 owner group          512 May 31 11:16 ..
+drwxrwx--- 1 owner group          512 Oct 27  2004 foo
+drwxrwx--- 1 owner group          512 Oct 27  2004 pub
+drwxrwx--- 1 owner group          512 Mar 29 12:09 bar
+[...]
+
+If DIRECTORY is omitted, the method will return the list of the current
+directory.
+
+=item nlst([DIRECTORY])
+
+Same as C<list> but return the list in this format:
+
+foo
+pub
+bar
+
+=item ascii
+
+Transfer file in ASCII.
+
+=item binary
+
+Transfer file in binary mode. No transformation will be done.
+
+=item get(REMOTE_FILE, LOCAL_FILE)
+
+Retrive the REMOTE_FILE from the ftp server. LOCAL_FILE may be a filename or a
+filehandle.	Return undef if it fails.
+
+=item put(LOCAL_FILE, [REMOTE_FILE])
+
+Store the LOCAL_FILE into the remote ftp server. LOCAL_FILE may be filehandle,
+but in this case REMOTE_FILE is required. Return undef if it fails.
+
+=item delete(REMOTE_FILE)
+
+Delete the indicated REMOTE_FILE.
+
+=item cwd(DIR)
+
+Attempt to change directory to the directory given in DIR.
+
+=item pwd
+
+Returns the full pathname of the current directory.
+
+=item noop
+
+It specifies no action other than the server send an OK reply.
 
 =back
 

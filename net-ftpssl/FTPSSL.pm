@@ -173,7 +173,7 @@ sub list {
   $io->close();
   $self->response;    # For catch "226 Closing data connection."
 
-  return $dati ? split( /\n/, $dati ) : 0;
+  return $dati ? split( /\n/, $dati ) : undef;
 }
 
 sub nlst {
@@ -200,7 +200,7 @@ sub nlst {
   $io->close();
   $self->response;    # For catch "226 Closing data connection."
 
-  return $dati ? split( /\n/, $dati ) : 0;
+  return $dati ? split( /\n/, $dati ) : undef;
 }
 
 sub get {

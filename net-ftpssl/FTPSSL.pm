@@ -642,7 +642,7 @@ RFC2228.
 
 =item new ( HOST [, OPTIONS ])
 
-Create a new B<Net::FTPSSL> object and opens a connection with the
+Creates a new B<Net::FTPSSL> object and opens a connection with the
 C<HOST>. C<HOST> is the address of the FTP server and it's a required
 argument. OPTIONS are passed in a hash like fashion, using key and value
 pairs.
@@ -663,8 +663,8 @@ option is ignored when the connection is implicitly encrypted
 
 B<timeout> - Set a connection timeout value. Default value is 120.
 
-B<buffer> - This is the block size that Net::FTPSSL will use when doing
-transfers. Default value is 10240.
+B<buffer> - This is the block size that Net::FTPSSL will use when a transfer is
+made. Default value is 10240.
 
 B<debug> - This set the debug informations option on/off. Default is off.
 
@@ -686,50 +686,49 @@ Use the given informations to log into the FTP server.
 
 This method returns a list of files in this format:
 
-total 5
-drwxrwx--- 1 owner group          512 May 31 11:16 .
-drwxrwx--- 1 owner group          512 May 31 11:16 ..
-drwxrwx--- 1 owner group          512 Oct 27  2004 foo
-drwxrwx--- 1 owner group          512 Oct 27  2004 pub
-drwxrwx--- 1 owner group          512 Mar 29 12:09 bar
-[...]
+ total 5
+ drwxrwx--- 1 owner group          512 May 31 11:16 .
+ drwxrwx--- 1 owner group          512 May 31 11:16 ..
+ drwxrwx--- 1 owner group          512 Oct 27  2004 foo
+ drwxrwx--- 1 owner group          512 Oct 27  2004 pub
+ drwxrwx--- 1 owner group          512 Mar 29 12:09 bar
 
 If DIRECTORY is omitted, the method will return the list of the current
 directory.
 
 =item nlst([DIRECTORY])
 
-Same as C<list> but return the list in this format:
+Same as C<list> but returns the list in this format:
 
-foo
-pub
-bar
+ foo
+ pub
+ bar
 
 =item ascii
 
-Transfer file in ASCII.
+Sets the transfer file in ASCII mode.
 
 =item binary
 
-Transfer file in binary mode. No transformation will be done.
+Sets the transfer file in binary mode. No transformation will be done.
 
 =item get(REMOTE_FILE, LOCAL_FILE)
 
-Retrive the REMOTE_FILE from the ftp server. LOCAL_FILE may be a filename or a
+Retrives the REMOTE_FILE from the ftp server. LOCAL_FILE may be a filename or a
 filehandle.	Return undef if it fails.
 
 =item put(LOCAL_FILE, [REMOTE_FILE])
 
-Store the LOCAL_FILE into the remote ftp server. LOCAL_FILE may be filehandle,
+Stores the LOCAL_FILE into the remote ftp server. LOCAL_FILE may be filehandle,
 but in this case REMOTE_FILE is required. Return undef if it fails.
 
 =item delete(REMOTE_FILE)
 
-Delete the indicated REMOTE_FILE.
+Deletes the indicated REMOTE_FILE.
 
 =item cwd(DIR)
 
-Attempt to change directory to the directory given in DIR.
+Attempts to change directory to the directory given in DIR.
 
 =item pwd
 

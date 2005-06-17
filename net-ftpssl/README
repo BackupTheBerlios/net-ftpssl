@@ -1,10 +1,9 @@
 Net-FTPSSL version 0.01
 =======================
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+Net::FTPSSL is an object oriented Perl module which implements a simple
+FTP client over a Secure Shell Layer (SSL) connection written following
+the directives described in RFC959 and RFC2228
 
 A README file is required for CPAN modules since CPAN extracts the
 README file from a module distribution so that people browsing the
@@ -25,11 +24,11 @@ DEPENDENCIES
 
 This module requires these other modules and libraries:
 
-  blah blah blah blah blah
+ Net::SSLeay
+ IO::Socket::SSL
+ File::Basename
 
 COPYRIGHT AND LICENCE
-
-Put the correct copyright and licence information here.
 
 Copyright (C) 2005 by Marco Dalla Stella
 

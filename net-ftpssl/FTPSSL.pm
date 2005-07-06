@@ -281,16 +281,17 @@ sub put {
     }
   }
 
-	if( defined ${ *$self }{'alloc_size'} ) {
-		delete ${ *$self }{'alloc_size'};
-	} else {
-  	if( -f $file_loc ) {
+# If alloc_size is already set, I skip this part
+	unless( defined ${ *$self }{'alloc_size'} ) {
+		if( -f $file_loc ) {
 	  	my $size = -s $file_loc;
 		  $self->alloc($size);
 	  }
 	}
+# the ALLO command gave, so I clear the var for future puts.
+	delete ${ *$self }{'alloc_size'};
 
-  if ( $self->_stor($file_rem) ) {
+	if ( $self->_stor($file_rem) ) {
 
     $io = new IO::Handle;
     tie( *$io, "Net::SSLeay::Handle", ${*$self}{'data_ch'} );
@@ -334,15 +335,14 @@ sub uput {									# Unique put (STOU command)
     }
   }
 
-	if( defined ${ *$self }{'alloc_size'} ) {
-		delete ${ *$self }{'alloc_size'};
-	} else {
+	unless( defined ${ *$self }{'alloc_size'} ) {
   	if( -f $file_loc ) {
 	  	my $size = -s $file_loc;
 		  $self->alloc($size);
 	  }
 	}
-
+	delete ${ *$self }{'alloc_size'};
+	
   if ( $self->_stou($file_rem) ) {
 
     $io = new IO::Handle;

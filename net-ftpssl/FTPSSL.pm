@@ -132,7 +132,7 @@ sub pasv {
 
   unless ( substr( $msg, 0, 1 ) == CMD_OK ) { return 0; }
 
-  $msg =~ m/(\d+)\s(.*)\(((\d+,?)+)\)\./
+  $msg =~ m/(\d+)\s(.*)\(((\d+,?)+)\)\.?/
     ;    # [227] [Entering Passive Mode] ([h1,h2,h3,h4,p1,p2]).
 
   my @address = split( /,/, $3 );

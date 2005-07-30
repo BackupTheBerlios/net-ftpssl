@@ -533,6 +533,12 @@ sub _rnto {
 	return ( $self->response == CMD_OK );
 }
 
+sub _cdup {
+	my $self = shift;
+	$self->command("CDUP");
+	return ( $self->response == CMD_OK );
+}
+
 #-----------------------------------------------------------------------
 #  Messages handler
 #-----------------------------------------------------------------------

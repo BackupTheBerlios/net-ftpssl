@@ -8,17 +8,33 @@
 use Test::More qw( no_plan );
 BEGIN { use_ok('Net::FTPSSL') }
 
-ok(1);
+my( $address, $server, $port, $user, $pass, $mode ); 
+
+print "\tServer address ( host[:port] ): ";
+chop( $address = <STDIN> );
+
+print "\tConnection mode (I)mplicit or (E)xplicit. Default 'E': ";
+chop( $mode = <STDIN> );
+
+print "\tUser: ";
+chop( $user = <STDIN> );
+
+print "\tPassword: ";
+chop( $pass = <STDIN> );
+
+( $server, $port ) = split( /:/, $address );
+$port = 21 unless $port;
+$mode = EXP_CRYPT unless $mode =~ /(I|E)/;
 
 my $ftp =
-  Net::FTPSSL->new( 'ftp.autistici.org', port => 21, encryption => EXP_CRYPT )
-  or die "Can't open ftp.autistici.org";
+  Net::FTPSSL->new( $server, port => $port, encryption => $mode )
+  or die "Can't open $server:$port";
 
-isa_ok( $ftp, 'Net::FTPSSL', 'Object creation' );
+isa_ok( $ftp, 'Net::FTPSSL', 'Net::FTP object creation' );
 
-ok( $ftp->login( 'anonymous', 'user@localhost' ), 'Login' );
+ok( $ftp->login( $user, $pass ), 'Login' );
 
-ok( scalar $ftp->list() != 0, 'list() command' );
+ok( scalar $ftp->list() != 0, 'list() command (PASV() command worked too!)' );
 
 $ftp->quit();
 

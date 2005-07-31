@@ -2,6 +2,7 @@
 # Author  : kral <kral at paranici dot org>
 # Created : 01 March 2005
 # Version : 0.02
+# Revision: $Id: FTPSSL.pm,v 1.11 2005/07/31 10:21:30 kral Exp $
 
 package Net::FTPSSL;
 

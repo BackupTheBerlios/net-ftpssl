@@ -173,7 +173,7 @@ sub list {
   $io->close();
   $self->response;    # For catch "226 Closing data connection."
 
-  return $dati ? split( /\n/, $dati ) : undef;
+  return $dati ? split( /\n/, $dati ) : ();
 }
 
 sub nlst {
@@ -200,7 +200,7 @@ sub nlst {
   $io->close();
   $self->response;    # For catch "226 Closing data connection."
 
-  return $dati ? split( /\n/, $dati ) : undef;
+  return $dati ? split( /\n/, $dati ) : ();
 }
 
 sub get {
@@ -710,6 +710,8 @@ Same as C<list> but returns the list in this format:
  foo
  pub
  bar
+
+Personally, I suggest to use list instead of nlst.
 
 =item ascii
 

@@ -4,32 +4,37 @@
 #########################
 
 # change 'tests => 1' to 'tests => last_test_to_print';
+use strict;
+use Test::More;
 
-use Test::More tests => 4;
+plan tests => 4;
+
 BEGIN { use_ok('Net::FTPSSL') }
 
-my( $address, $server, $port, $user, $pass, $mode ); 
 
-print "\tServer address ( host[:port] ): ";
-chop( $address = <STDIN> );
+diag( "\nNet::FTPSSL was loaded properly. " );
 
-print "\tConnection mode (I)mplicit or (E)xplicit. Default 'E': ";
-chop( $mode = <STDIN> );
-
-print "\tUser (default 'anonymous'): ";
-chop( $user = <STDIN> );
-
-print "\tPassword (default 'user\@localhost'): ";
-chop( $pass = <STDIN> );
-
-( $server, $port ) = split( /:/, $address );
-$port = 21 unless $port;
-$mode = EXP_CRYPT unless $mode =~ /(I|E)/;
-$user = 'anonymous' unless $user;
-$pass = 'user@localhost' unless $pass;
+my $more_test = ask_yesno("Do you want to make a deeper test");
 
 SKIP: {
-  skip 'Server address not defined', 4 unless $server;
+	skip "Deeper test skipped for some reason...", 3 unless $more_test;
+
+	my( $address, $server, $port, $user, $pass, $mode ); 
+
+	$address = ask("Server address ( host[:port] )");
+
+	$mode = ask("\tConnection mode (I)mplicit or (E)xplicit. Default 'E'");
+
+	$user = ask("\tUser (default 'anonymous')");
+
+	$pass = ask("\tPassword (default 'user\@localhost')");
+
+	( $server, $port ) = split( /:/, $address );
+	$port = 21 unless $port;
+	$mode = EXP_CRYPT unless $mode =~ /(I|E)/;
+	$user = 'anonymous' unless $user;
+	$pass = 'user@localhost' unless $pass;
+
   my $ftp =
     Net::FTPSSL->new( $server, port => $port, encryption => $mode )
     or die "Can't open $server:$port";
@@ -43,8 +48,23 @@ SKIP: {
   $ftp->quit();
 }
 
-#########################
+sub ask {
+  my $question = shift;
+  diag("\n$question ? ");
 
-# Insert your test code below, the Test::More module is use()ed here so read
-# its man page ( perldoc Test::More ) for help writing this test script.
+  my $answer = <STDIN>;
+  chomp $answer;
+  return $answer;
+}
+
+sub ask_yesno {
+
+  my $question = shift;
+  diag("\n$question ? [y/N]");
+
+  my $answer = <STDIN>;
+  chomp $answer;
+  return $answer =~ /^y(es)*$/i ? 1 : 0;
+}
+
 # vim:ft=perl:

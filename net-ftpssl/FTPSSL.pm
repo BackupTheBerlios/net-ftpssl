@@ -1,8 +1,8 @@
 # File	  : Net::FTPSSL
 # Author  : kral <kral at paranici dot org>
 # Created : 01 March 2005
-# Version : 0.02
-# Revision: $Id: FTPSSL.pm,v 1.11 2005/07/31 10:21:30 kral Exp $
+# Version : 0.03
+# Revision: $Id: FTPSSL.pm,v 1.12 2005/08/10 14:16:38 kral Exp $
 
 package Net::FTPSSL;
 
@@ -14,7 +14,7 @@ use IO::Socket::INET;
 use Net::SSLeay::Handle;
 use Carp qw( carp croak );
 
-$VERSION = "0.02";
+$VERSION = "0.03";
 @EXPORT  = qw( IMP_CRYPT EXP_CRYPT );
 
 
@@ -40,7 +40,6 @@ sub new {
   my $timeout        = $arg{Timeout} || 120;
   my $buf_size       = $arg{Buffer} || 10240;
   my $encrypt_mode   = $arg{Encryption} || EXP_CRYPT;
-  my $encrypt_method = $arg{Method} || 'TLS';
   my $clear_sock;
 
   croak "Host undefined" unless $host;
@@ -63,12 +62,12 @@ sub new {
   # TODO: Let the user select the encryption type. (SSL, TLS)
   if ( $encrypt_mode eq EXP_CRYPT ) {
     return undef unless ( response($socket) == CMD_OK );
-    command( $socket, "AUTH", $encrypt_method );
+    command( $socket, "AUTH", "TLS" );
     response($socket);
   }
 
   # Turn the clear connection in a SSL one.
-  my $obj = $type->start_SSL($socket)
+  my $obj = $type->start_SSL($socket, SSL_version => "TLSv1")
     or croak IO::Socket::SSL::errstr();
 
   # This is made for catch the banner when the connection
@@ -657,24 +656,20 @@ pairs.
 
 C<OPTIONS> are:
 
-B<port> - The port number to connect to on the remote FTP server.
+B<Port> - The port number to connect to on the remote FTP server.
 Default value is 21.
 
-B<encryption> - The connection can be implicitly (B<IMP_CRYPT>) or
+B<Encryption> - The connection can be implicitly (B<IMP_CRYPT>) or
 explicitly (B<EXP_CRYPT>) encrypted.
 In explicit cases the connection begins clear and became encrypted after an
 "AUTH" command is sent. Default value is EXP_CRYPT.
 
-B<method> - The connection method passed by the "AUTH" command. This
-option is ignored when the connection is implicitly encrypted
-(IMP_CRYPT). May be "SSL" or "TLS".
+B<Timeout> - Set a connection timeout value. Default value is 120.
 
-B<timeout> - Set a connection timeout value. Default value is 120.
-
-B<buffer> - This is the block size that Net::FTPSSL will use when a transfer is
+B<Buffer> - This is the block size that Net::FTPSSL will use when a transfer is
 made. Default value is 10240.
 
-B<debug> - This set the debug informations option on/off. Default is off.
+B<Debug> - This set the debug informations option on/off. Default is off.
 
 =back
 
@@ -743,6 +738,10 @@ Attempts to change directory to the directory given in DIR.
 =item pwd
 
 Returns the full pathname of the current directory.
+
+=item cdup
+
+Change directory to the parent of the current directory.
 
 =item noop
 

@@ -2,7 +2,7 @@
 # Author  : kral <kral at paranici dot org>
 # Created : 01 March 2005
 # Version : 0.03
-# Revision: $Id: FTPSSL.pm,v 1.12 2005/08/10 14:16:38 kral Exp $
+# Revision: $Id: FTPSSL.pm,v 1.13 2005/08/10 16:04:09 kral Exp $
 
 package Net::FTPSSL;
 
@@ -13,6 +13,7 @@ use base ( 'Exporter', 'IO::Socket::SSL');
 use IO::Socket::INET;
 use Net::SSLeay::Handle;
 use Carp qw( carp croak );
+use Errno qw/ EINTR /;
 
 $VERSION = "0.03";
 @EXPORT  = qw( IMP_CRYPT EXP_CRYPT );
@@ -165,7 +166,11 @@ sub list {
     $io   = new IO::Handle;
     tie( *$io, "Net::SSLeay::Handle", ${*$self}{'data_ch'} );
 
-    while ( ( my $len = sysread $io, $tmp, $size ) ) {
+    while( my $len = sysread $io, $tmp, $size ) {
+			unless( defined $len ) {
+				next if $! == EINTR;
+				croak "System read error on read while list(): $!\n";
+			}
       $dati .= $tmp;
     }
   }
@@ -616,7 +621,7 @@ __END__
 
 Net::FTPSSL - A FTP over SSL/TLS class
 
-=head1 VERSION 0.02
+=head1 VERSION 0.03
 
 =head1 SYNOPSIS
 

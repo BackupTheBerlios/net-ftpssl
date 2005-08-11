@@ -2,7 +2,7 @@
 # Author  : kral <kral at paranici dot org>
 # Created : 01 March 2005
 # Version : 0.03
-# Revision: $Id: FTPSSL.pm,v 1.13 2005/08/10 16:04:09 kral Exp $
+# Revision: $Id: FTPSSL.pm,v 1.14 2005/08/11 07:20:08 kral Exp $
 
 package Net::FTPSSL;
 
@@ -568,8 +568,10 @@ sub command {
 
   print STDERR ">>> " . $data if ref($self) eq "Net::FTPSSL" && ${*$self}{'debug'};
 
+	my $written
   my $len = length $data;
-  unless ( syswrite( $self, $data, $len ) ) {
+  $written = syswrite( $self, $data, $len );
+	unless( defined $written ) {
     carp "Can't write on socket: $!";
     $self->close;
     return undef;

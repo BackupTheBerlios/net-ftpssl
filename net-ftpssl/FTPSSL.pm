@@ -2,7 +2,7 @@
 # Author  : kral <kral at paranici dot org>
 # Created : 01 March 2005
 # Version : 0.03
-# Revision: $Id: FTPSSL.pm,v 1.17 2005/08/11 10:21:59 kral Exp $
+# Revision: $Id: FTPSSL.pm,v 1.18 2005/08/11 14:26:30 kral Exp $
 
 package Net::FTPSSL;
 
@@ -467,6 +467,22 @@ sub cdup {
   my $self = shift;
   $self->command("CDUP");
   return ( $self->response == CMD_OK );
+}
+
+# TODO: Make mkdir() works with recursion.
+sub mkdir {
+	my $self = shift;
+	my $dir = shift;
+	$self->command("MKD", $dir);
+	return ( $self->response == CMD_OK );	
+}
+
+# TODO: Make rmdir() works with recursion.
+sub rmdir {
+	my $self = shift;
+	my $dir = shift;
+	$self->command("RMD", $dir);
+	return ( $self->response == CMD_OK );	
 }
 
 #-----------------------------------------------------------------------

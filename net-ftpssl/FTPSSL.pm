@@ -2,14 +2,14 @@
 # Author  : kral <kral at paranici dot org>
 # Created : 01 March 2005
 # Version : 0.03
-# Revision: $Id: FTPSSL.pm,v 1.16 2005/08/11 07:33:40 kral Exp $
+# Revision: $Id: FTPSSL.pm,v 1.17 2005/08/11 10:21:59 kral Exp $
 
 package Net::FTPSSL;
 
 use strict;
 use warnings;
 use vars qw( $VERSION @EXPORT );
-use base ( 'Exporter', 'IO::Socket::SSL');
+use base ( 'Exporter', 'IO::Socket::SSL' );
 use IO::Socket::INET;
 use Net::SSLeay::Handle;
 use Carp qw( carp croak );
@@ -18,29 +18,28 @@ use Errno qw/ EINTR /;
 $VERSION = "0.03";
 @EXPORT  = qw( IMP_CRYPT EXP_CRYPT );
 
+sub IMP_CRYPT { "I" }
+sub EXP_CRYPT { "E" }
 
-sub IMP_CRYPT { "I" };
-sub EXP_CRYPT { "E" };
-
-use constant CMD_INFO => 1;
-use constant CMD_OK   => 2;
+use constant CMD_INFO    => 1;
+use constant CMD_OK      => 2;
 use constant CMD_MORE    => 3;
 use constant CMD_REJECT  => 4;
 use constant CMD_ERROR   => 5;
 use constant CMD_PENDING => 0;
 use constant MODE_BINARY => "I";
-use constant MODE_ASCII	=> "A";
+use constant MODE_ASCII  => "A";
 
 sub new {
-  my $self           = shift;
-  my $type           = ref($self) || $self;
-  my $host           = shift;
-  my %arg            = @_;
-  my $port           = $arg{Port} || 'ftp(21)';
-  my $debug          = $arg{Debug} || 0;
-  my $timeout        = $arg{Timeout} || 120;
-  my $buf_size       = $arg{Buffer} || 10240;
-  my $encrypt_mode   = $arg{Encryption} || EXP_CRYPT;
+  my $self         = shift;
+  my $type         = ref($self) || $self;
+  my $host         = shift;
+  my %arg          = @_;
+  my $port         = $arg{Port} || 'ftp(21)';
+  my $debug        = $arg{Debug} || 0;
+  my $timeout      = $arg{Timeout} || 120;
+  my $buf_size     = $arg{Buffer} || 10240;
+  my $encrypt_mode = $arg{Encryption} || EXP_CRYPT;
   my $clear_sock;
 
   croak "Host undefined" unless $host;
@@ -68,7 +67,7 @@ sub new {
   }
 
   # Turn the clear connection in a SSL one.
-  my $obj = $type->start_SSL($socket, SSL_version => "TLSv1")
+  my $obj = $type->start_SSL( $socket, SSL_version => "TLSv1" )
     or croak IO::Socket::SSL::errstr();
 
   # This is made for catch the banner when the connection
@@ -97,6 +96,7 @@ sub login {
   return 0 unless $self->password($pass);
   return 1;
 }
+
 #-----------------------------------------------------------------------
 
 sub user {
@@ -157,7 +157,7 @@ sub list {
   my ( $tmp, $dati, $io, $size );
 
   unless ( $self->pasv() ) {
-    croak "Can't set passive mode!: " .${*$self}{'last_ftp_msg'};
+    croak "Can't set passive mode!: " . ${*$self}{'last_ftp_msg'};
   }
 
   if ( $self->_list($path) ) {
@@ -166,11 +166,11 @@ sub list {
     $io   = new IO::Handle;
     tie( *$io, "Net::SSLeay::Handle", ${*$self}{'data_ch'} );
 
-    while( my $len = sysread $io, $tmp, $size ) {
-			unless( defined $len ) {
-				next if $! == EINTR;
-				croak "System read error on read while list(): $!\n";
-			}
+    while ( my $len = sysread $io, $tmp, $size ) {
+      unless ( defined $len ) {
+        next if $! == EINTR;
+        croak "System read error on read while list(): $!\n";
+      }
       $dati .= $tmp;
     }
   }
@@ -187,7 +187,7 @@ sub nlst {
   my ( $tmp, $dati, $io, $size );
 
   unless ( $self->pasv() ) {
-    croak "Can't set passive mode!: " .${*$self}{'last_ftp_msg'};
+    croak "Can't set passive mode!: " . ${*$self}{'last_ftp_msg'};
   }
 
   if ( $self->_nlst($path) ) {
@@ -197,13 +197,13 @@ sub nlst {
     $io = new IO::Handle;
     tie( *$io, "Net::SSLeay::Handle", ${*$self}{'data_ch'} );
 
-		while( my $len = sysread $io, $tmp, $size ) {
-			unless( defined $len ) {
-				next if $! == EINTR;
-				croak "System read error on read while nlst(): $!\n";
-			}
-			$dati .= $tmp;
-		}
+    while ( my $len = sysread $io, $tmp, $size ) {
+      unless ( defined $len ) {
+        next if $! == EINTR;
+        croak "System read error on read while nlst(): $!\n";
+      }
+      $dati .= $tmp;
+    }
   }
 
   $io->close();
@@ -216,8 +216,9 @@ sub get {
   my $self     = shift;
   my $file_rem = shift;
   my $file_loc = shift;
-  my ( $tmp, $localfd, $io, $len );
-  my $size = ${*$self}{'buf_size'} || 2048;
+  my ( $size, $localfd );
+
+  $size = ${*$self}{'buf_size'} || 2048;
 
   unless ( $self->pasv() ) {
     croak "Can't set passive mode!";
@@ -225,161 +226,188 @@ sub get {
 
   if ( ref($file_loc) && ref($file_loc) eq "GLOB" ) {
     $localfd = \*$file_loc;
-  } else {
+  }
+  else {
     unless ( open( $localfd, "> $file_loc" ) ) {
-      print "pippo\n";
-			$self->_abort();
+      $self->_abort();
       croak "Can't create local file!";
     }
   }
 
   if ( ${*$self}{'type'} eq MODE_BINARY ) {
     unless ( binmode $localfd ) {
-			$self->_abort();
+      $self->_abort();
       croak "Can't set binary mode to local file!";
     }
   }
 
   if ( $self->_retr($file_rem) ) {
-
-    $io = new IO::Handle;
+    my ( $data, $written );
+    my $io = new IO::Handle;
     tie( *$io, "Net::SSLeay::Handle", ${*$self}{'data_ch'} );
-		
-    while ( ( $len = sysread $io, $tmp, $size ) ) {
-      syswrite $localfd, $tmp, $len;
-    }
-  }
 
-  if ($io) {
+    while ( ( my $len = sysread $io, $data, $size ) ) {
+      unless ( defined $len ) {
+        next if $! == EINTR;
+        croak "System read error on get(): $!\n";
+      }
+      $written = syswrite $localfd, $data, $len;
+      croak "System write error on get(): $!\n" unless defined $written;
+    }
+
     $io->close();
     $self->response;    # For catch "226 Closing data connection."
-		return 1;
+    return 1;
   }
-	return undef;
+
+  return undef;
 }
 
 sub put {
   my $self     = shift;
   my $file_loc = shift;
   my $file_rem = shift;
-  my ( $tmp, $localfd, $io, $len );
+  my ( $size, $localfd );
+
+  $size = ${*$self}{'buf_size'} || 2048;
 
   unless ( $self->pasv() ) {
-    croak "Can't set passive mode!: " .${*$self}{'last_ftp_msg'};
+    croak "Can't set passive mode!: " . ${*$self}{'last_ftp_msg'};
   }
 
   if ( ref($file_loc) && ref($file_loc) eq "GLOB" ) {
     $localfd = \*$file_loc;
-		croak "If you had passed a stream, you must specify the remote filename." unless $file_rem;
-  } else {
+    croak "If you had passed a stream, you must specify the remote filename."
+      unless $file_rem;
+  }
+  else {
     unless ( open( $localfd, "< $file_loc" ) ) {
-			$self->_abort();
+      $self->_abort();
       croak "Can't open local file!";
     }
   }
 
-	unless( $file_rem ) {
+  unless ($file_rem) {
     require File::Basename;
     $file_rem = File::Basename::basename($file_loc);
   }
 
   if ( ${*$self}{'type'} eq MODE_BINARY ) {
     unless ( binmode $localfd ) {
-			$self->_abort();
+      $self->_abort();
       croak "Can't set binary mode to local file!";
     }
   }
 
-# If alloc_size is already set, I skip this part
-	unless( defined ${ *$self }{'alloc_size'} ) {
-		if( -f $file_loc ) {
-	  	my $size = -s $file_loc;
-		  $self->alloc($size);
-	  }
-	}
-# the ALLO command gave, so I clear the var for future puts.
-	delete ${ *$self }{'alloc_size'};
-
-	if ( $self->_stor($file_rem) ) {
-
-    $io = new IO::Handle;
-    tie( *$io, "Net::SSLeay::Handle", ${*$self}{'data_ch'} );
-
-    while ( $len = sysread( $localfd, $tmp, ${*$self}{'buf_size'} ) ) {
-      syswrite $io, $tmp, $len;
+  # If alloc_size is already set, I skip this part
+  unless ( defined ${*$self}{'alloc_size'} ) {
+    if ( -f $file_loc ) {
+      my $size = -s $file_loc;
+      $self->alloc($size);
     }
   }
 
-	if ($io) {
+  delete ${*$self}{'alloc_size'};
+
+  if ( $self->_stor($file_rem) ) {
+
+    my ( $data, $written );
+    my $io = new IO::Handle;
+    tie( *$io, "Net::SSLeay::Handle", ${*$self}{'data_ch'} );
+
+    while ( ( my $len = sysread $localfd, $data, $size ) ) {
+      unless ( defined $len ) {
+        next if $! == EINTR;
+        croak "System read error on put(): $!\n";
+      }
+      $written = syswrite $io, $data, $len;
+      croak "System write error on put(): $!\n" unless defined $written;
+    }
+
     $io->close();
     $self->response;    # For catch "226 Closing data connection."
-		return 1;
+    return 1;
+
   }
+
+  return undef;
 }
 
-sub uput {									# Unique put (STOU command)
+sub uput {              # Unique put (STOU command)
   my $self     = shift;
   my $file_loc = shift;
   my $file_rem = shift;
-  my ( $tmp, $localfd, $io, $len );
+  my ( $size, $localfd );
+
+  $size = ${*$self}{'buf_size'} || 2048;
 
   unless ( $self->pasv() ) {
-			$self->_abort();
-    croak "Can't set passive mode!: " .${*$self}{'last_ftp_msg'};
+    $self->_abort();
+    croak "Can't set passive mode!: " . ${*$self}{'last_ftp_msg'};
   }
 
   if ( ref($file_loc) && ref($file_loc) eq "GLOB" ) {
     $localfd = \*$file_loc;
-  } else {
+  }
+  else {
     unless ( open( $localfd, "< $file_loc" ) ) {
-			$self->_abort();
+      $self->_abort();
       croak "Can't open local file!";
     }
   }
 
   if ( ${*$self}{'type'} eq 'I' ) {
     unless ( binmode $localfd ) {
-			$self->_abort();
+      $self->_abort();
       croak "Can't set binary mode to local file!";
     }
   }
 
-	unless( defined ${ *$self }{'alloc_size'} ) {
-  	if( -f $file_loc ) {
-	  	my $size = -s $file_loc;
-		  $self->alloc($size);
-	  }
-	}
-	delete ${ *$self }{'alloc_size'};
-	
-  if ( $self->_stou($file_rem) ) {
-
-    $io = new IO::Handle;
-    tie( *$io, "Net::SSLeay::Handle", ${*$self}{'data_ch'} );
-
-    while ( $len = sysread( $localfd, $tmp, ${*$self}{'buf_size'} ) ) {
-      syswrite $io, $tmp, $len;
+  unless ( defined ${*$self}{'alloc_size'} ) {
+    if ( -f $file_loc ) {
+      my $size = -s $file_loc;
+      $self->alloc($size);
     }
   }
 
-	if ($io) {
+  delete ${*$self}{'alloc_size'};
+
+  if ( $self->_stou($file_rem) ) {
+
+    my ( $data, $written );
+    my $io = new IO::Handle;
+    tie( *$io, "Net::SSLeay::Handle", ${*$self}{'data_ch'} );
+
+    while ( ( my $len = sysread $localfd, $data, $size ) ) {
+      unless ( defined $len ) {
+        next if $! == EINTR;
+        croak "System read error on put(): $!\n";
+      }
+      $written = syswrite $io, $data, $len;
+      croak "System write error on put(): $!\n" unless defined $written;
+    }
+
     $io->close();
     $self->response;    # For catch "226 Closing data connection."
-		return 1;
+    return 1;
+
   }
+
+  return undef;
 }
 
 sub alloc {
-	my $self = shift;
-	my $size = shift;
+  my $self = shift;
+  my $size = shift;
 
-	if( $self->_alloc( $size ) ) {
-		${ *$self }{'alloc_size'} = $size;
-	} else {
-		return 0;
-	}
-	
-	return 1;
+  if ( $self->_alloc($size) ) {
+    ${*$self}{'alloc_size'} = $size;
+  }
+  else {
+    return 0;
+  }
+
+  return 1;
 }
 
 sub delete {
@@ -395,18 +423,21 @@ sub auth {
 }
 
 sub pwd {
-	my $self = shift;
-	my $path;
-	
-	$self->command("PWD");
-	$self->response();
-	
-	if( ${ *$self }{'last_ftp_msg'} =~ /\"(.*)\".*/ ) { # 257 "/<PATH>/" is current directory.
-		( $path = $1 ) =~ s/\"\"/\"/g; 			# "Quote-doubling" convention - RFC 959, Appendix II
-		return $path;
-	} else {
-		return undef;	
-	}
+  my $self = shift;
+  my $path;
+
+  $self->command("PWD");
+  $self->response();
+
+  if ( ${*$self}{'last_ftp_msg'} =~ /\"(.*)\".*/ )
+  {    # 257 "/<PATH>/" is current directory.
+    ( $path = $1 ) =~
+      s/\"\"/\"/g;    # "Quote-doubling" convention - RFC 959, Appendix II
+    return $path;
+  }
+  else {
+    return undef;
+  }
 }
 
 sub cwd {
@@ -422,20 +453,20 @@ sub noop {
 }
 
 sub rename {
-	my $self = shift;
-	my $old_name = shift;
-	my $new_name = shift;
+  my $self     = shift;
+  my $old_name = shift;
+  my $new_name = shift;
 
-	return 0 unless $self->_rnfr($old_name);
-	return 0 unless $self->_rnto($new_name);
-	return 1;
-	
+  return 0 unless $self->_rnfr($old_name);
+  return 0 unless $self->_rnto($new_name);
+  return 1;
+
 }
 
 sub cdup {
-	my $self = shift;
-	$self->command("CDUP");
-	return ( $self->response == CMD_OK );
+  my $self = shift;
+  $self->command("CDUP");
+  return ( $self->response == CMD_OK );
 }
 
 #-----------------------------------------------------------------------
@@ -532,22 +563,21 @@ sub _abort {
 
 sub _alloc {
   my $self = shift;
-  $self->command("ALLO", @_);
+  $self->command( "ALLO", @_ );
   return ( $self->response == CMD_OK );
 }
 
 sub _rnfr {
-	my $self = shift;
-	$self->command("RNFR", @_);
-	return ( $self->response == CMD_MORE );
+  my $self = shift;
+  $self->command( "RNFR", @_ );
+  return ( $self->response == CMD_MORE );
 }
 
 sub _rnto {
-	my $self = shift;
-	$self->command("RNTO", @_);
-	return ( $self->response == CMD_OK );
+  my $self = shift;
+  $self->command( "RNTO", @_ );
+  return ( $self->response == CMD_OK );
 }
-
 
 #-----------------------------------------------------------------------
 #  Messages handler
@@ -558,7 +588,8 @@ sub command {
   my @args;
   my $data;
 
-  @args = grep defined($_), @_; # remove undef values from the list. Maybe I have to find out why those undef were passed.
+  @args = grep defined($_), @_
+    ; # remove undef values from the list. Maybe I have to find out why those undef were passed.
   $data = join(
     " ",
     map {
@@ -570,12 +601,13 @@ sub command {
 
   $data .= "\015\012";
 
-  print STDERR ">>> " . $data if ref($self) eq "Net::FTPSSL" && ${*$self}{'debug'};
+  print STDERR ">>> " . $data
+    if ref($self) eq "Net::FTPSSL" && ${*$self}{'debug'};
 
-	my $written;
+  my $written;
   my $len = length $data;
   $written = syswrite( $self, $data, $len );
-	unless( defined $written ) {
+  unless ( defined $written ) {
     carp "Can't write on socket: $!";
     $self->close;
     return undef;
@@ -589,20 +621,21 @@ sub response {
   my $self = shift;
   my ( $data, $code );
 
-  while(1) {
+  while (1) {
 
     $data = $self->getline();
     $data =~ m/^(\d+)(\-?)(.*)$/s;
 
     $code = $1;
-    print STDERR "<<< " . $data if ref($self) eq "Net::FTPSSL" && ${*$self}{'debug'};
+    print STDERR "<<< " . $data
+      if ref($self) eq "Net::FTPSSL" && ${*$self}{'debug'};
 
     if ( ref($self) eq "Net::FTPSSL" ) {
-      ${ *$self }{'last_ftp_msg'} = $data;
+      ${*$self}{'last_ftp_msg'} = $data;
     }
-    
+
     last if $2 ne '-';
-    
+
   }
 
   return substr( $code, 0, 1 );
@@ -610,8 +643,8 @@ sub response {
 }
 
 sub last_message {
-	my $self = shift;
-	return ${ *$self }{'last_ftp_msg'};
+  my $self = shift;
+  return ${*$self}{'last_ftp_msg'};
 }
 
 1;

@@ -11,6 +11,7 @@ plan tests => 4;
 
 BEGIN { use_ok('Net::FTPSSL') }
 
+ok(1, 'Net::FTPSSL loaded.');
 
 diag( "\nNet::FTPSSL was loaded properly. " );
 

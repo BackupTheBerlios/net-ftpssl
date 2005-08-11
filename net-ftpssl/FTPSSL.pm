@@ -2,7 +2,7 @@
 # Author  : kral <kral at paranici dot org>
 # Created : 01 March 2005
 # Version : 0.03
-# Revision: $Id: FTPSSL.pm,v 1.15 2005/08/11 07:22:39 kral Exp $
+# Revision: $Id: FTPSSL.pm,v 1.16 2005/08/11 07:33:40 kral Exp $
 
 package Net::FTPSSL;
 
@@ -197,9 +197,13 @@ sub nlst {
     $io = new IO::Handle;
     tie( *$io, "Net::SSLeay::Handle", ${*$self}{'data_ch'} );
 
-    while ( ( my $len = sysread $io, $tmp, $size ) ) {
-      $dati .= $tmp;
-    }
+		while( my $len = sysread $io, $tmp, $size ) {
+			unless( defined $len ) {
+				next if $! == EINTR;
+				croak "System read error on read while nlst(): $!\n";
+			}
+			$dati .= $tmp;
+		}
   }
 
   $io->close();

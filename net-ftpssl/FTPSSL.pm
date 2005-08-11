@@ -2,7 +2,7 @@
 # Author  : kral <kral at paranici dot org>
 # Created : 01 March 2005
 # Version : 0.03
-# Revision: $Id: FTPSSL.pm,v 1.14 2005/08/11 07:20:08 kral Exp $
+# Revision: $Id: FTPSSL.pm,v 1.15 2005/08/11 07:22:39 kral Exp $
 
 package Net::FTPSSL;
 
@@ -568,7 +568,7 @@ sub command {
 
   print STDERR ">>> " . $data if ref($self) eq "Net::FTPSSL" && ${*$self}{'debug'};
 
-	my $written
+	my $written;
   my $len = length $data;
   $written = syswrite( $self, $data, $len );
 	unless( defined $written ) {
@@ -583,12 +583,7 @@ sub command {
 
 sub response {
   my $self = shift;
-  my ( $data, $size, $code );
-  if ( ref($self) eq "Net::FTPSSL" ) {
-    $size = ${*$self}{'buf_size'} || 2048;
-  } else {
-    $size = 2048;
-  }
+  my ( $data, $code );
 
   while(1) {
 

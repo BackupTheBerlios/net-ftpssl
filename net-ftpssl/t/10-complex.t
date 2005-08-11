@@ -7,11 +7,11 @@
 use strict;
 use Test::More;
 
-plan tests => 4;
+plan tests => 8;
 
 BEGIN { use_ok('Net::FTPSSL') }
 
-diag( "You can also perform a deeper test." );
+diag( "\nYou can also perform a deeper test." );
 diag( "Some informations will be required for this test:" );
 diag( "A secure ftp server address, a user, a password and a directory" );
 diag( "where the user has permissions to read and write." );
@@ -39,7 +39,7 @@ SKIP: {
 	$pass = 'user@localhost' unless $pass;
 
   my $ftp =
-    Net::FTPSSL->new( $server, port => $port, encryption => $mode )
+    Net::FTPSSL->new( $server, Port => $port, Encryption => $mode )
     or die "Can't open $server:$port";
 
   isa_ok( $ftp, 'Net::FTPSSL', 'Net::FTP object creation' );
@@ -49,6 +49,11 @@ SKIP: {
 	ok( $ftp->cwd( $dir ), "Changed the dir to $dir" );
 
   ok( scalar $ftp->list() != 0, 'list() command' );
+
+	ok( $ftp->put( './t/test_file.tar.gz' ), 'puting a test file on $dir' );
+	ok( $ftp->rename('test_file.tar.gz', 'test_file_new.tar.gz'), 'renaming it' );
+	ok( $ftp->get('test_file_new.tar.gz', './t/test_file_new.tar.gz'), 'getting the renamed file' );
+	ok( $ftp->delete('test_file_new.tar.gz'), 'deleting the test file' );
 
   $ftp->quit();
 }

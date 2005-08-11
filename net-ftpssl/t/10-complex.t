@@ -18,7 +18,7 @@ diag( "where the user has permissions to read and write." );
 my $more_test = ask_yesno("Do you want to make a deeper test");
 
 SKIP: {
-	skip "Deeper test skipped for some reason...", 3 unless $more_test;
+	skip "Deeper test skipped for some reason...", 8 unless $more_test;
 
 	my( $address, $server, $port, $user, $pass, $mode, $dir ); 
 

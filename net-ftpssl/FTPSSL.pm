@@ -2,7 +2,7 @@
 # Author  : kral <kral at paranici dot org>
 # Created : 01 March 2005
 # Version : 0.03
-# Revision: $Id: FTPSSL.pm,v 1.19 2005/09/01 10:00:09 kral Exp $
+# Revision: $Id: FTPSSL.pm,v 1.20 2005/09/01 10:15:01 kral Exp $
 
 package Net::FTPSSL;
 
@@ -832,6 +832,13 @@ RFC 2228 - L<ftp://ftp.rfc-editor.org/in-notes/rfc2228.txt>
 
 Graham Barr <gbarr at pobox dot com> - for have written such a great
 collection of modules (libnet).
+
+=head1 BUGS
+
+I'm currently testing the module with proftpd and Titan FTP. I'm having a lot
+of trouble with the second at the moment. Put or get phases seem to work ok
+(sysread and syswrite don't return any errors) but the server doesn't receive
+all the sent data. I'm working on it.
 
 =head1 COPYRIGHT
 

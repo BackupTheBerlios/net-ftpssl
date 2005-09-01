@@ -2,7 +2,7 @@
 # Author  : kral <kral at paranici dot org>
 # Created : 01 March 2005
 # Version : 0.03
-# Revision: $Id: FTPSSL.pm,v 1.20 2005/09/01 10:15:01 kral Exp $
+# Revision: $Id: FTPSSL.pm,v 1.21 2005/09/01 19:47:29 kral Exp $
 
 package Net::FTPSSL;
 
@@ -18,8 +18,8 @@ use Errno qw/ EINTR /;
 $VERSION = "0.03";
 @EXPORT  = qw( IMP_CRYPT EXP_CRYPT );
 
-sub IMP_CRYPT { "I" }
-sub EXP_CRYPT { "E" }
+use constant IMP_CRYPT => "I";
+use constant EXP_CRYPT => "E";
 
 use constant CMD_INFO    => 1;
 use constant CMD_OK      => 2;
@@ -166,6 +166,7 @@ sub list {
     $io   = new IO::Handle;
     tie( *$io, "Net::SSLeay::Handle", ${*$self}{'data_ch'} );
 
+
     while ( my $len = sysread $io, $tmp, $size ) {
       unless ( defined $len ) {
         next if $! == EINTR;
@@ -246,6 +247,8 @@ sub get {
     my $io = new IO::Handle;
     tie( *$io, "Net::SSLeay::Handle", ${*$self}{'data_ch'} );
 
+    $io->autoflush(1);
+
     while ( ( my $len = sysread $io, $data, $size ) ) {
       unless ( defined $len ) {
         next if $! == EINTR;
@@ -315,12 +318,24 @@ sub put {
     my $io = new IO::Handle;
     tie( *$io, "Net::SSLeay::Handle", ${*$self}{'data_ch'} );
 
+    $io->autoflush(1);
+
     while ( ( my $len = sysread $localfd, $data, $size ) ) {
       unless ( defined $len ) {
         next if $! == EINTR;
         croak "System read error on put(): $!\n";
       }
       $written = syswrite $io, $data, $len;
+      
+      # Intendo una cosa del genere
+      # dovrebbe essere? da perldoc IO::Handle:
+      # $io->autoflush(1); # untested :) Ho appena controllato
+                         # la doc su CPAN, ed esiste anche il metodo flush()
+                         # Forse pero` autoflush (ma all'inizio, direi)
+                         # e` meglio. Figata comunque subethaedit
+     # ricevuto. vero :D se vuoi dare un occhiata al resto del codice, fai pure
+     # ogni consiglio e` ben accetto :)
+      
       croak "System write error on put(): $!\n" unless defined $written;
     }
 
@@ -377,6 +392,8 @@ sub uput {              # Unique put (STOU command)
     my ( $data, $written );
     my $io = new IO::Handle;
     tie( *$io, "Net::SSLeay::Handle", ${*$self}{'data_ch'} );
+
+    $io->autoflush(1);
 
     while ( ( my $len = sysread $localfd, $data, $size ) ) {
       unless ( defined $len ) {

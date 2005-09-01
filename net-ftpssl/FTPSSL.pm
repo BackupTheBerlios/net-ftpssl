@@ -2,7 +2,7 @@
 # Author  : kral <kral at paranici dot org>
 # Created : 01 March 2005
 # Version : 0.03
-# Revision: $Id: FTPSSL.pm,v 1.18 2005/08/11 14:26:30 kral Exp $
+# Revision: $Id: FTPSSL.pm,v 1.19 2005/09/01 10:00:09 kral Exp $
 
 package Net::FTPSSL;
 
@@ -469,7 +469,7 @@ sub cdup {
   return ( $self->response == CMD_OK );
 }
 
-# TODO: Make mkdir() works with recursion.
+# TODO: Make mkdir() working with recursion.
 sub mkdir {
 	my $self = shift;
 	my $dir = shift;
@@ -477,7 +477,7 @@ sub mkdir {
 	return ( $self->response == CMD_OK );	
 }
 
-# TODO: Make rmdir() works with recursion.
+# TODO: Make rmdir() working with recursion.
 sub rmdir {
 	my $self = shift;
 	my $dir = shift;
@@ -796,7 +796,15 @@ Returns the full pathname of the current directory.
 
 =item cdup
 
-Change directory to the parent of the current directory.
+Changs directory to the parent of the current directory.
+
+=item mkdir(DIR)
+
+Creates the indicated directory. No recursion at the moment.
+
+=item rmdir(DIR)
+
+Removes the empty indicated directory. No recursion at the moment.
 
 =item noop
 

@@ -4,6 +4,7 @@ Revision history for Perl extension Net::FTPSSL.
 	- cdup(), mkdir() and rmdir() added
 	- A better sysread() and syswrite() use on list(), nlst(), get(), put() and uput() methods
 	- Added autoflush on list(), nlst(), get(), put() and uput() methods
+	- A better interactive test, (the previous one sucked! ^_^)
 	- Other minor fixes
 
 0.02 01/08/2005 22:12:34

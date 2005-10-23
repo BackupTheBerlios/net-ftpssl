@@ -1,8 +1,8 @@
 # File	  : Net::FTPSSL
 # Author  : kral <kral at paranici dot org>
 # Created : 01 March 2005
-# Version : 0.03
-# Revision: $Id: FTPSSL.pm,v 1.23 2005/10/17 16:02:07 kral Exp $
+# Version : 0.04
+# Revision: $Id: FTPSSL.pm,v 1.24 2005/10/23 14:37:12 kral Exp $
 
 package Net::FTPSSL;
 
@@ -15,7 +15,7 @@ use Net::SSLeay::Handle;
 use Carp qw( carp croak );
 use Errno qw/ EINTR /;
 
-$VERSION = "0.03";
+$VERSION = "0.04";
 @EXPORT  = qw( IMP_CRYPT EXP_CRYPT );
 
 use constant IMP_CRYPT => "I";
@@ -699,7 +699,7 @@ __END__
 
 Net::FTPSSL - A FTP over SSL/TLS class
 
-=head1 VERSION 0.03
+=head1 VERSION 0.04
 
 =head1 SYNOPSIS
 

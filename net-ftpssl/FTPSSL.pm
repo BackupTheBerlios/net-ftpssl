@@ -2,7 +2,7 @@
 # Author  : kral <kral at paranici dot org>
 # Created : 01 March 2005
 # Version : 0.04
-# Revision: $Id: FTPSSL.pm,v 1.24 2005/10/23 14:37:12 kral Exp $
+# Revision: $Id: FTPSSL.pm,v 1.25 2005/10/31 08:14:30 kral Exp $
 
 package Net::FTPSSL;
 
@@ -712,11 +712,11 @@ Net::FTPSSL - A FTP over SSL/TLS class
     or die "Can't open ftp.yoursecureserver.com";
 
   $ftps->login('anonymous', 'user@localhost') 
-    or die "Can't login: ", $ftps->$last_message();
+    or die "Can't login: ", $ftps->last_message();
 
-  $ftps->cwd("/pub") or die "Can't change directory: ", $ftps->last_message;
+  $ftps->cwd("/pub") or die "Can't change directory: ", $ftps->last_message();
 
-  $ftps->get("file") or die "Can't get file: ", $ftps->last_message;
+  $ftps->get("file") or die "Can't get file: ", $ftps->last_message();
 
   $ftps->quit();
 	

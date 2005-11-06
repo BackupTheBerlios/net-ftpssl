@@ -2,7 +2,7 @@
 # Author  : kral <kral at paranici dot org>
 # Created : 01 March 2005
 # Version : 0.04
-# Revision: $Id: FTPSSL.pm,v 1.25 2005/10/31 08:14:30 kral Exp $
+# Revision: $Id: FTPSSL.pm,v 1.26 2005/11/06 09:34:20 kral Exp $
 
 package Net::FTPSSL;
 
@@ -666,8 +666,6 @@ sub response {
 		
   foreach my $line ( @lines ) {
 
-# 	$data = $self->getline();	
-#   $data =~ m/^(\d+)(\-?)(.*)$/s;
     $line =~ m/^(\d+)(\-?)(.*)$/s;
 
     $code = $1;
